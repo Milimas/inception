@@ -1,46 +1,57 @@
-version: '0'
+version: '3.7'
 services:
-  wordpress:
-    depends_on:
-      - mariadb
-      - nginx
-    container_name: wordpress
-    restart: unless-stopped
-    env_file: .env
-    enviroment:
-      - WORDPRESS_DB_HOST=mariadb:3306
-      - WORDPRESS_DB_USER=$MYSQL_USER
-      - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
-      - WORDPRESS_DB_NAME=wordpress
-    volumes:
-      - wordpress:/var/www/html
-    networks:
-      - app-network
-
-  nginx:
-    container_name: nginx
-    depends_on:
-      - wordpress
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    volumes:
-      - wordpress:/var/www/html
-      - ./conf:/etc/nginx/conf.d
-    networks:
-      - app-network
-
   mariadb:
+    #init: true
+    build:
+      context: ./requirements/mariadb/
     container_name: mariadb
     restart: unless-stopped
     env_file: .env
-    enviroment:
-      - MYSQL_DATABASE=wordpress
-    volumes:
-      - mariadb:/var/lib/mariadb
-    networks:
-      - app-network
-        
-volumes:
-  wodpress:
-  mariadb:
+    environment:
+    - MYSQL_DATABASE=wordpress
+      #entrypoint: tail -f /dev/null
+    ports:
+      - 3306:3306
+#  volumes:
+#    - mariadb:/var/lib/mariadb
+#    networks:
+#      - app-network
+#  nginx:
+#    build:
+#      context: ./requirements/nginx/
+#    container_name: nginx
+#      #    depends_on:
+#      #      - wordpress
+#    restart: unless-stopped
+#    ports:
+#      - "80:80"
+#    volumes:
+#      - wordpress:/var/www/html
+#      - ./conf:/etc/nginx/conf.d
+#    networks:
+#      - app-network
+
+#  wordpress:
+#    build:
+#      context: ./requirements/wordpress
+#    depends_on:
+#      - mariadb
+#      - nginx
+#    container_name: wordpress
+#    restart: unless-stopped
+#    env_file: .env
+#    environment:
+#      - WORDPRESS_DB_HOST=mariadb:3306
+#      - WORDPRESS_DB_USER=$MYSQL_USER
+#      - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
+#      - WORDPRESS_DB_NAME=wordpress
+#    volumes:
+#      - wordpress:/var/www/html
+#    networks:
+#      - app-network
+#
+#
+#        
+#volumes:
+#  wodpress:
+#  mariadb:

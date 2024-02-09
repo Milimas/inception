@@ -1,30 +1,26 @@
-FROM alpine:latest
-RUN apk add --no-cache mariadb mariadb-client 
-
+FROM alpine:edge
+# use the CDN mirror from gilderlabs since its much faster
+RUN mkdir -p /etc/apk &&\
+# Install openrc
+    apk update && apk add mariadb mariadb-client openrc &&\
+# Tell openrc its running inside a container, till now that has meant LXC
+    sed -i 's/#rc_sys=""/rc_sys="lxc"/g' /etc/rc.conf &&\
+# Tell openrc loopback and net are already there, since docker handles the networking
+    echo 'rc_provide="loopback net"' >> /etc/rc.conf &&\
+# no need for loggers
+    sed -i 's/^#\(rc_logger="YES"\)$/\1/' /etc/rc.conf &&\
+# can't get ttys unless you run the container in privileged mode
+    sed -i '/tty/d' /etc/inittab &&\
+# can't set hostname since docker sets it
+    sed -i 's/hostname $opts/# hostname $opts/g' /etc/init.d/hostname &&\
+# can't mount tmpfs since not privileged
+    sed -i 's/mount -t tmpfs/# mount -t tmpfs/g' /lib/rc/sh/init.sh &&\
+# can't do cgroups
+    sed -i 's/cgroup_add_service /# cgroup_add_service /g' /lib/rc/sh/openrc-run.sh &&\
+# clean apk cache
+    rm -rf /var/cache/apk/*
 RUN mkdir -p /var/lib/mysql
-RUN /etc/init.d/mariadb setup
-
-VOLUME ["/var/lib/mysql"]
-VOLUME ["/etc/my.cnf.d"]
-
-COPY . .
-
-LABEL version="1.0"
-LABEL description="MariaDB Server"
-Label maintainer="abeihaqi@student.1337.ma"
-
-#RUN chown -R mysql:mysql /var/lib/mysql
-#RUN mkdir -p /run/openrc
-#RUN mkdir -p /run/openrc/exclusive
-#RUN mkdir -p /run/openrc/softlevel
-#RUN rc-update add mariadb default
-
-ENV MYSQL_USER=$MYSQL_USER
-ENV MYSQL_PASSWORD=$MYSQL_PASSWORD
-
-#RUN chmod +x /setup.sh
-#RUN sh -c /setup.sh
-
-#ENTRYPOINT ["/setup.sh"]
-
-EXPOSE 3306
+RUN mysql_install_db --user=mysql --datadir=/var/lib/mysql
+ADD setup.sh /setup.sh
+RUN chmod +x /setup.sh
+ENTRYPOINT ["/setup.sh"]

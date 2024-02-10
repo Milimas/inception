@@ -1,8 +1,15 @@
 version: '3.7'
 name: inception
 volumes:
-  mariadbV:
-    name: mariadbV
+  wordpress:
+    name: wordpress
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/kali/data/wordpress
+      o: bind
+  mariadb:
+    name: mariadb
     driver: local
     driver_opts:
       type: none
@@ -16,7 +23,6 @@ networks:
 
 services:
   mariadb:
-    #init: true
     image: mariadb:inception
     env_file: 
       - .env
@@ -28,51 +34,45 @@ services:
         - DB_PASSWORD=${DB_PASSWORD}
     container_name: mariadb
     restart: unless-stopped
-      #environment:
-      #- DB_NAME=$DB_NAME
-      #- DB_USER=$DB_USER
-      #- DB_PASSWORD=$DB_PASSWORD
     volumes:
-      - mariadbV:/var/lib/mysql
+      - mariadb:/var/lib/mysql
     networks:
       - inception-network
 
-#  nginx:
-#    build:
-#      context: ./requirements/nginx/
-#    container_name: nginx
-#      #    depends_on:
-#      #      - wordpress
-#    restart: unless-stopped
-#    ports:
-#      - "80:80"
-#    volumes:
-#      - wordpress:/var/www/html
-#      - ./conf:/etc/nginx/conf.d
-#    networks:
-#      - app-network
+  wordpress:
+    image: wordpress:inception
+    env_file: 
+      - .env
+    build:
+      context: ./requirements/wordpress
+      args:
+        - DB_NAME=${DB_NAME}
+        - DB_USER=${DB_USER}
+        - DB_PASSWORD=${DB_PASSWORD}
+        - DB_HOST=${DB_HOST}
+    depends_on:
+      - mariadb
+    container_name: wordpress
+    restart: unless-stopped
+    volumes:
+      - wordpress:/var/www/wordpress
+    networks:
+      - inception-network
 
-#  wordpress:
-#    build:
-#      context: ./requirements/wordpress
-#    depends_on:
-#      - mariadb
-#      - nginx
-#    container_name: wordpress
-#    restart: unless-stopped
-#    env_file: .env
-#    environment:
-#      - WORDPRESS_DB_HOST=mariadb:3306
-#      - WORDPRESS_DB_USER=$MYSQL_USER
-#      - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
-#      - WORDPRESS_DB_NAME=wordpress
-#    volumes:
-#      - wordpress:/var/www/html
-#    networks:
-#      - app-network
-#
-#
-#        
-#volumes:
-#  wodpress:
-#  mariadb:
+  nginx:
+    image: nginx:inception
+    build:
+      context: ./requirements/nginx/
+    env_file: 
+      - .env
+    container_name: nginx
+    depends_on:
+      - wordpress
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - wordpress:/var/www/wordpress
+      - ./conf:/etc/nginx/conf.d
+    networks:
+      - inception-network

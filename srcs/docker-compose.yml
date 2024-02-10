@@ -1,21 +1,42 @@
 version: '3.7'
+name: inception
+volumes:
+  mariadbV:
+    name: mariadbV
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/kali/data/mariadb
+      o: bind 
+
+networks:
+  inception-network:
+    driver: bridge
+    name: inception-network
+
 services:
   mariadb:
     #init: true
+    image: mariadb:inception
+    env_file: 
+      - .env
     build:
       context: ./requirements/mariadb/
+      args:
+        - DB_NAME=${DB_NAME}
+        - DB_USER=${DB_USER}
+        - DB_PASSWORD=${DB_PASSWORD}
     container_name: mariadb
     restart: unless-stopped
-    env_file: .env
-    environment:
-    - MYSQL_DATABASE=wordpress
-      #entrypoint: tail -f /dev/null
-    ports:
-      - 3306:3306
-#  volumes:
-#    - mariadb:/var/lib/mariadb
-#    networks:
-#      - app-network
+      #environment:
+      #- DB_NAME=$DB_NAME
+      #- DB_USER=$DB_USER
+      #- DB_PASSWORD=$DB_PASSWORD
+    volumes:
+      - mariadbV:/var/lib/mysql
+    networks:
+      - inception-network
+
 #  nginx:
 #    build:
 #      context: ./requirements/nginx/

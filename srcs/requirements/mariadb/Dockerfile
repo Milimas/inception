@@ -1,26 +1,41 @@
-FROM alpine:edge
-# use the CDN mirror from gilderlabs since its much faster
-RUN mkdir -p /etc/apk &&\
-# Install openrc
-    apk update && apk add mariadb mariadb-client openrc &&\
-# Tell openrc its running inside a container, till now that has meant LXC
-    sed -i 's/#rc_sys=""/rc_sys="lxc"/g' /etc/rc.conf &&\
-# Tell openrc loopback and net are already there, since docker handles the networking
-    echo 'rc_provide="loopback net"' >> /etc/rc.conf &&\
-# no need for loggers
-    sed -i 's/^#\(rc_logger="YES"\)$/\1/' /etc/rc.conf &&\
-# can't get ttys unless you run the container in privileged mode
-    sed -i '/tty/d' /etc/inittab &&\
-# can't set hostname since docker sets it
-    sed -i 's/hostname $opts/# hostname $opts/g' /etc/init.d/hostname &&\
-# can't mount tmpfs since not privileged
-    sed -i 's/mount -t tmpfs/# mount -t tmpfs/g' /lib/rc/sh/init.sh &&\
-# can't do cgroups
-    sed -i 's/cgroup_add_service /# cgroup_add_service /g' /lib/rc/sh/openrc-run.sh &&\
-# clean apk cache
-    rm -rf /var/cache/apk/*
-RUN mkdir -p /var/lib/mysql
-RUN mysql_install_db --user=mysql --datadir=/var/lib/mysql
-ADD setup.sh /setup.sh
-RUN chmod +x /setup.sh
-ENTRYPOINT ["/setup.sh"]
+FROM alpine:3.17.2
+
+# expose port
+EXPOSE 3306
+
+ENV ROOT_PASSWORD 123
+
+# update apk repositories
+RUN apk update
+
+# upgrade all
+RUN apk upgrade
+
+# install mariadb
+RUN apk add --no-cache \
+	mariadb \
+	mariadb-client \
+	openrc
+
+RUN openrc
+RUN touch /run/openrc/softlevel
+
+# enable remote connections to mariadb from any IP
+RUN sed -i 's|skip-networking|#skip-networking|g' /etc/my.cnf.d/mariadb-server.cnf
+RUN sed -i 's|#bind-address=0.0.0.0|bind-address=0.0.0.0|g' /etc/my.cnf.d/mariadb-server.cnf
+
+#RUN rc-service mariadb setup
+#RUN rc-service mariadb start
+
+
+# add entry point script
+ADD --chown=root:root setup.sh /tmp/start.sh
+
+# make entry point script executable
+RUN chmod +x /tmp/start.sh
+
+# set working dir
+WORKDIR /var/lib/mysql/
+
+# run script
+CMD ["/tmp/start.sh"]

@@ -6,14 +6,14 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: /home/kali/data/wordpress
+      device: /home/${USER}/data/wordpress
       o: bind
   mariadb:
     name: mariadb
     driver: local
     driver_opts:
       type: none
-      device: /home/kali/data/mariadb
+      device: /home/${USER}/data/mariadb
       o: bind 
 
 networks:
@@ -41,8 +41,7 @@ services:
 
   wordpress:
     image: wordpress:inception
-    env_file: 
-      - .env
+    env_file: .env
     build:
       context: ./requirements/wordpress
       args:
@@ -73,6 +72,6 @@ services:
       - "80:80"
     volumes:
       - wordpress:/var/www/wordpress
-      - ./conf:/etc/nginx/conf.d
+      - ./requirements/nginx/conf:/etc/nginx/conf.d
     networks:
       - inception-network

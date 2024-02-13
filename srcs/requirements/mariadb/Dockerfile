@@ -12,6 +12,7 @@ RUN sed -i 's|#bind-address=0.0.0.0|bind-address=0.0.0.0|g' /etc/my.cnf.d/mariad
 RUN echo "DB_NAME=$DB_NAME\nDB_USER=$DB_USER\nDB_PASSWORD=$DB_PASSWORD"
 RUN rc-service mariadb setup && \
 	rc-service mariadb start && \
+	mysql -e "CREATE DATABASE $DB_NAME;" && \
 	mysql -e "CREATE USER '$DB_USER'@'%' IDENTIFIED BY '$DB_PASSWORD';" && \
 	mysql -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%' WITH GRANT OPTION;" && \
 	mysql -e "FLUSH PRIVILEGES;"

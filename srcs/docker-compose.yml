@@ -29,9 +29,9 @@ services:
     build:
       context: ./requirements/mariadb/
       args:
-        - DB_NAME=${DB_NAME}
-        - DB_USER=${DB_USER}
-        - DB_PASSWORD=${DB_PASSWORD}
+        - DB_NAME=${WORDPRESS_DB_NAME}
+        - DB_USER=${WORDPRESS_DB_USER}
+        - DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
     container_name: mariadb
     restart: unless-stopped
     volumes:
@@ -44,11 +44,6 @@ services:
     env_file: .env
     build:
       context: ./requirements/wordpress
-      args:
-        - DB_NAME=${DB_NAME}
-        - DB_USER=${DB_USER}
-        - DB_PASSWORD=${DB_PASSWORD}
-        - DB_HOST=${DB_HOST}
     depends_on:
       - mariadb
     container_name: wordpress

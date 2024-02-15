@@ -1,14 +1,15 @@
 WP_CLI=wp-cli --allow-root
-
+WP_CONFIG = /var/www/wordpress/wp-config.php
 start: install
 	php-fpm81 -F
 
 install: configure 
 
-configure:
+configure: $(WP_CONFIG)
+
+$(WP_CONFIG):
+	ln -s /usr/bin/php81 /usr/bin/php
 	@echo "⚙️ Configuring Wordpress database..."
-	@rm -f wp-config.php
-	php -m | grep Phar
 	$(WP_CLI) core download --path=wordpress
 	$(WP_CLI) core config \
 		--dbhost=${WORDPRESS_DB_HOST} \

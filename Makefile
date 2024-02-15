@@ -16,6 +16,9 @@ prune: clean
 	docker system prune -af
 
 reload:
-	docker compose -f srcs/docker-compose.yml up --build
+	docker compose -p inception -f srcs/docker-compose.yml up --build -d
+
+tlstest:
+	curl -I -v --tlsv1.3 --tls-max 1.3 https://abeihaqi.42.fr
 
 .PHONY: hostname, stop clean prune reload all

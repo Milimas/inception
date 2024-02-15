@@ -64,9 +64,9 @@ services:
       - wordpress
     restart: unless-stopped
     ports:
-      - "80:80"
+      #- "80:80"
+      - "443:443"
     volumes:
       - wordpress:/var/www/wordpress
-      - ./requirements/nginx/conf:/etc/nginx/conf.d
     networks:
       - inception-network

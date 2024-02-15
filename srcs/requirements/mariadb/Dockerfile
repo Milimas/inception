@@ -23,4 +23,4 @@ ADD --chown=root:root tools/bootstrap.sh /tmp/bootstrap.sh
 RUN chmod +x /tmp/bootstrap.sh
 
 # run script
-CMD ["/tmp/bootstrap.sh"]
+ENTRYPOINT ["/tmp/bootstrap.sh"]

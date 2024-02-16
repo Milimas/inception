@@ -8,7 +8,7 @@ install: configure
 configure: $(WP_CONFIG)
 
 $(WP_CONFIG):
-	ln -s /usr/bin/php81 /usr/bin/php
+	#ln -s /usr/bin/php81 /usr/bin/php
 	@echo "⚙️ Configuring Wordpress database..."
 	$(WP_CLI) core download --path=wordpress
 	$(WP_CLI) core config \

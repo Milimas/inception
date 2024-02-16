@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.18
 LABEL maintainer="abeihaqi@student.1337.ma"
 RUN apk add --update --no-cache nginx  
 RUN mkdir -p /var/www/wordpress/

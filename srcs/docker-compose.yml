@@ -70,3 +70,19 @@ services:
       - wordpress:/var/www/wordpress
     networks:
       - inception-network
+
+  redis:
+    image: redis:inception
+    build:
+      context: ./requirements/bonus/redis/
+    env_file:
+      - .env
+    container_name: redis
+    depends_on:
+      - nginx
+    restart: unless-stopped
+    volumes:
+      - wordpress:/var/www/wordpress
+    networks:
+      - inception-network
+

@@ -11,7 +11,9 @@ RUN apk add --update --no-cache php81 \
 	php81-phar \
 	php81-fpm \
 	php81-mysqli \
-	php81-iconv
+	php81-iconv \
+	php81-redis \
+	php81-ctype
 
 RUN sed -i 's|listen = 127.0.0.1:9000|listen = 0.0.0.0:9000|g' /etc/php81/php-fpm.d/www.conf
 ADD tools/Makefile /scripts/Makefile

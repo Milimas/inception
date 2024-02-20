@@ -16,7 +16,12 @@ prune: clean
 	docker system prune -af
 
 reload:
-	docker compose -p inception -f srcs/docker-compose.yml up --build -d
+	mkdir -p ~/data/wordpress
+	mkdir -p ~/data/mariadb
+	docker compose -p inception -f srcs/docker-compose.yml up --build -d 
+
+run:
+	docker compose -p inception -f srcs/docker-compose.yml up -d
 
 tlstest:
 	curl -I -v --tlsv1.3 --tls-max 1.3 https://abeihaqi.42.fr

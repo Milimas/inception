@@ -1,0 +1,4 @@
+ Network inception-network  Creating
+ Network inception-network  Created
+ Container mariadb  Creating
+Error response from daemon: failed to mount local volume: mount /home/abeihaqi/data/mariadb:/var/lib/docker/volumes/mariadb/_data, flags: 0x1000: no such file or directory

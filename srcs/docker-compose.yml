@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 name: inception
 volumes:
   wordpress:
@@ -29,9 +29,9 @@ services:
     build:
       context: ./requirements/mariadb/
       args:
-        - DB_NAME=${WORDPRESS_DB_NAME}
-        - DB_USER=${WORDPRESS_DB_USER}
-        - DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
+        - DB_NAME=${DB_NAME}
+        - DB_USER=${DB_USER}
+        - DB_PASS=${DB_PASS}
     container_name: mariadb
     restart: unless-stopped
     volumes:
@@ -57,6 +57,8 @@ services:
     image: nginx:inception
     build:
       context: ./requirements/nginx/
+      args:
+        - DOMAIN=${WP_WEBSITE_URL_WITHOUT_HTTP}
     env_file: 
       - .env
     container_name: nginx
@@ -75,6 +77,8 @@ services:
     image: redis:inception
     build:
       context: ./requirements/bonus/redis/
+      args:
+        - REDIS_PASS=${REDIS_PASS}
     env_file:
       - .env
     container_name: redis
@@ -86,3 +90,24 @@ services:
     networks:
       - inception-network
 
+  ftp:
+    image: ftp:inception
+    build:
+      context: ./requirements/bonus/ftp/
+      args:
+        - FTP_USER=${FTP_USER}
+        - FTP_PASS=${FTP_PASS}
+        - FTP_HOME=${FTP_HOME}
+    env_file:
+      - .env
+    container_name: ftp
+    depends_on:
+      - wordpress
+    restart: unless-stopped
+    ports:
+      - "20-21:20-21"
+      - "40000-40009:40000-40009"
+    volumes:
+      - wordpress:/var/www/wordpress
+    networks:
+      - inception-network

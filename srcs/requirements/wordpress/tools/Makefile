@@ -3,6 +3,8 @@ WP_CLI=wp-cli --allow-root --path=/var/www/wordpress
 WP_CONFIG=/var/www/wordpress/wp-config.php
 
 start: install
+	$(WP_CLI) redis enable --activate
+	chown -R nobody:nobody /var/www
 	php-fpm81 -F
 
 install: configure
@@ -42,7 +44,5 @@ $(WP_CONFIG):
 	$(WP_CLI) plugin install redis-cache
 	$(WP_CLI) plugin update --all
 	cp /var/www/wordpress/wp-content/plugins/redis-cache/includes/object-cache.php /var/www/wordpress/wp-content/
-	$(WP_CLI) redis enable --activate
 	$(WP_CLI) option update siteurl "${WORDPRESS_WEBSITE_URL}"
 	#$(WP_CLI) rewrite structure $(WORDPRESS_WEBSITE_POST_URL_STRUCTURE)
-	chown -R nobody:nobody /var/www

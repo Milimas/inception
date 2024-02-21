@@ -111,3 +111,21 @@ services:
       - wordpress:/var/www/wordpress
     networks:
       - inception-network
+  
+  adminer:
+    image: adminer:inception
+    build:
+      context: ./requirements/bonus/adminer
+    env_file:
+      - .env
+    container_name: adminer
+    depends_on:
+      - mariadb
+      - nginx
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - mariadb:/var/www/mariadb
+    networks:
+      - inception-network

@@ -15,7 +15,7 @@ clean: stop
 prune: clean
 	docker system prune -af
 
-reload:
+reload: stop
 	mkdir -p ~/data/wordpress
 	mkdir -p ~/data/mariadb
 	docker compose -p inception -f srcs/docker-compose.yml up --build -d 

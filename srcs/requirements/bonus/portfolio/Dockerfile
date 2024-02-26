@@ -4,9 +4,9 @@ COPY portfolio /var/www
 
 WORKDIR /var/www
 
-RUN apk add --update --no-cache npm && \
-	npm install && npm build
+RUN apk add --update --no-cache npm \ 
+	&& npm install \
+	&& npm run build
 
-ENTRYPOINT ["tail"]
-
-CMD ["tail", "-f", "/dev/null"]
+ENTRYPOINT ["npm"]
+CMD ["start"]

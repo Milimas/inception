@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.7'
 name: inception
 volumes:
   wordpress:
@@ -6,15 +6,17 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: /home/${USER}/data/wordpress
+      device: ~/data/wordpress
       o: bind
   mariadb:
     name: mariadb
     driver: local
     driver_opts:
       type: none
-      device: /home/${USER}/data/mariadb
+      device: ~/data/mariadb
       o: bind 
+  portainer:
+    name: portainer
 
 networks:
   inception-network:
@@ -23,6 +25,7 @@ networks:
 
 services:
   mariadb:
+    init: true
     image: mariadb:inception
     env_file: 
       - .env
@@ -40,6 +43,7 @@ services:
       - inception-network
 
   wordpress:
+    init: true
     image: wordpress:inception
     env_file: .env
     build:
@@ -54,6 +58,7 @@ services:
       - inception-network
 
   nginx:
+    init: true
     image: nginx:inception
     build:
       context: ./requirements/nginx/
@@ -64,9 +69,10 @@ services:
     container_name: nginx
     depends_on:
       - wordpress
+      - portfolio
     restart: unless-stopped
     ports:
-      #- "80:80"
+      - "80:80"
       - "443:443"
     volumes:
       - wordpress:/var/www/wordpress
@@ -74,6 +80,7 @@ services:
       - inception-network
 
   redis:
+    init: true
     image: redis:inception
     build:
       context: ./requirements/bonus/redis/
@@ -91,6 +98,7 @@ services:
       - inception-network
 
   ftp:
+    init: true
     image: ftp:inception
     build:
       context: ./requirements/bonus/ftp/
@@ -113,6 +121,7 @@ services:
       - inception-network
   
   adminer:
+    init: true
     image: adminer:inception
     build:
       context: ./requirements/bonus/adminer
@@ -129,15 +138,26 @@ services:
       - inception-network
 
   portfolio:
+    init: true
     image: portfolio:inception
     build:
       context: ./requirements/bonus/portfolio/
     container_name: portfolio
-    depends_on:
-      - nginx
     restart: unless-stopped
-    ports:
-      - "80:80"
     networks:
       - inception-network
 
+  portainer:
+    init: true
+    image: portainer:inception
+    build:
+      context: ./requirements/bonus/portainer/
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "9443:9443"
+    networks:
+      - inception-network
+    volumes:
+      - portainer:/data
+      - /var/run/docker.sock:/var/run/docker.sock

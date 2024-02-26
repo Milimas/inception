@@ -14,6 +14,7 @@ RUN apk add --update --no-cache mariadb mariadb-client openrc && \
 	mysql -e "CREATE DATABASE $DB_NAME;" && \
 	mysql -e "CREATE USER '$DB_USER'@'%' IDENTIFIED BY '$DB_PASS';" && \
 	mysql -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%' WITH GRANT OPTION;" && \
-	mysql -e "FLUSH PRIVILEGES;"
+	mysql -e "FLUSH PRIVILEGES;" \
+	&& mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$DB_PASS');"
 
 ENTRYPOINT ["mariadbd-safe"]

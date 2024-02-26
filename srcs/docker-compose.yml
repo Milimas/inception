@@ -72,7 +72,6 @@ services:
       - portfolio
     restart: unless-stopped
     ports:
-      - "80:80"
       - "443:443"
     volumes:
       - wordpress:/var/www/wordpress
@@ -144,6 +143,8 @@ services:
       context: ./requirements/bonus/portfolio/
     container_name: portfolio
     restart: unless-stopped
+    ports:
+      - "3000:3000"
     networks:
       - inception-network
 

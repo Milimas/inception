@@ -4,9 +4,9 @@ COPY portfolio /var/www
 
 WORKDIR /var/www
 
-RUN apk add --update --no-cache npm \ 
-	&& npm install \
-	&& npm run build
+RUN apk add --update --no-cache php81
 
-ENTRYPOINT ["npm"]
-CMD ["start"]
+EXPOSE 3000
+
+ENTRYPOINT ["php"]
+CMD ["-S", "0.0.0.0:3000"]

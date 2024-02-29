@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 name: inception
 volumes:
   wordpress:
@@ -25,16 +25,16 @@ networks:
 
 services:
   mariadb:
-    init: true
     image: mariadb:inception
-    env_file: 
-      - .env
+    init: true
+    env_file: .env
     build:
       context: ./requirements/mariadb/
       args:
         - DB_NAME=${DB_NAME}
         - DB_USER=${DB_USER}
         - DB_PASS=${DB_PASS}
+        - DB_ROOT_PASS=${DB_ROOT_PASS}
     container_name: mariadb
     restart: unless-stopped
     volumes:
@@ -43,8 +43,8 @@ services:
       - inception-network
 
   wordpress:
-    init: true
     image: wordpress:inception
+    init: true
     env_file: .env
     build:
       context: ./requirements/wordpress
@@ -58,8 +58,8 @@ services:
       - inception-network
 
   nginx:
-    init: true
     image: nginx:inception
+    init: true
     build:
       context: ./requirements/nginx/
       args:
@@ -73,14 +73,15 @@ services:
     restart: unless-stopped
     ports:
       - "443:443"
+    hostname: abeihaqi.42.fr
     volumes:
       - wordpress:/var/www/wordpress
-    networks:
+    networks: 
       - inception-network
 
   redis:
-    init: true
     image: redis:inception
+    init: true
     build:
       context: ./requirements/bonus/redis/
       args:
@@ -97,8 +98,8 @@ services:
       - inception-network
 
   ftp:
-    init: true
     image: ftp:inception
+    init: true
     build:
       context: ./requirements/bonus/ftp/
       args:
@@ -120,8 +121,8 @@ services:
       - inception-network
   
   adminer:
-    init: true
     image: adminer:inception
+    init: true
     build:
       context: ./requirements/bonus/adminer
     env_file:
@@ -137,8 +138,8 @@ services:
       - inception-network
 
   portfolio:
-    init: true
     image: portfolio:inception
+    init: true
     build:
       context: ./requirements/bonus/portfolio/
     container_name: portfolio
@@ -149,8 +150,8 @@ services:
       - inception-network
 
   portainer:
-    init: true
     image: portainer:inception
+    init: true
     build:
       context: ./requirements/bonus/portainer/
     container_name: portainer

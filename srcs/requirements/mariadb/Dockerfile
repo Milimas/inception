@@ -1,20 +1,33 @@
-FROM alpine:3.18
+FROM alpine:3.18.6
 
+ARG DB_ROOT_PASS
+ARG DB_PASS
 ARG DB_NAME
 ARG DB_USER
-ARG DB_PASS
 
-RUN apk add --update --no-cache mariadb mariadb-client openrc && \
-	openrc && \
-	touch /run/openrc/softlevel && \
-	sed -i 's|skip-networking|#skip-networking|g' /etc/my.cnf.d/mariadb-server.cnf && \
-	sed -i 's|#bind-address=0.0.0.0|bind-address=0.0.0.0|g' /etc/my.cnf.d/mariadb-server.cnf && \
-	rc-service mariadb setup && \
-	rc-service mariadb start && \
-	mysql -e "CREATE DATABASE $DB_NAME;" && \
-	mysql -e "CREATE USER '$DB_USER'@'%' IDENTIFIED BY '$DB_PASS';" && \
-	mysql -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%' WITH GRANT OPTION;" && \
-	mysql -e "FLUSH PRIVILEGES;" \
-	&& mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$DB_PASS');"
+RUN cat <<EOF > tmp.db 
+USE mysql;
+FLUSH PRIVILEGES ;
+GRANT ALL ON *.* TO 'root'@'%' identified by '$DB_ROOT_PASS' WITH GRANT OPTION ;
+GRANT ALL ON *.* TO 'root'@'localhost' identified by '$DB_ROOT_PASS' WITH GRANT OPTION ;
+SET PASSWORD FOR 'root'@'localhost'=PASSWORD('${DB_ROOT_PASS}') ;
+DROP DATABASE IF EXISTS test ;
+CREATE DATABASE IF NOT EXISTS $DB_NAME CHARACTER SET utf8 COLLATE utf8_general_ci;
+GRANT ALL ON $DB_NAME.* to '$DB_USER'@'%' IDENTIFIED BY '$DB_PASS';
+FLUSH PRIVILEGES ;
+EOF
 
-ENTRYPOINT ["mariadbd-safe"]
+RUN apk add --update --no-cache mariadb mariadb-client\
+	&& mkdir -p /run/mysqld\
+	&& chown -R mysql:mysql /run/mysqld\
+	&& chown -R mysql:mysql /var/lib/mysql\
+	&& mysql_install_db --user=mysql --ldata=/var/lib/mysql\
+	&& /usr/bin/mysqld --user=mysql --bootstrap --verbose=0 --skip-name-resolve --skip-networking=0 < tmp.db
+	#&& rm -f tmp.db
+	
+
+ADD --chmod=744 tools/run.sh .
+
+ENTRYPOINT ["./run.sh"]
+#ENTRYPOINT ["/usr/bin/mysqld", "--user=mysql", "--console", "--skip-name-resolve", "--skip-networking=0"]
+#ENTRYPOINT tail -f /dev/null

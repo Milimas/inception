@@ -20,10 +20,10 @@ reload: stop
 	mkdir -p ~/data/mariadb
 	docker compose -p inception -f srcs/docker-compose.yml up --build -d 
 
-run:
-	docker compose -p inception -f srcs/docker-compose.yml up
+start:
+	docker compose -p inception -f srcs/docker-compose.yml up -d
 
-build:
+dev:
 	docker compose -p inception -f srcs/docker-compose.yml up
 
 tlstest:
@@ -31,19 +31,16 @@ tlstest:
 
 correction: cstop rmps rmim rmvl rmnw
 
-test:
-	docker network rm $(shell docker network ls -q)
-
 rmnw:
-	docker network rm $(shell docker network ls -q)
+	-docker network rm $(shell docker network ls -q)
 rmvl:
-	docker volume rm $(shell docker volume ls -q);
+	-docker volume rm $(shell docker volume ls -q);
 rmim:
-	docker rmi -f $(shell docker images -qa);
+	-docker rmi -f $(shell docker images -qa);
 rmps:
-	docker rm $(shell docker ps -qa);
+	-docker rm $(shell docker ps -qa);
 cstop:
-	docker stop $(shell docker ps -qa)
+	-docker stop $(shell docker ps -qa)
 
 
 .PHONY: hostname, stop clean prune reload all correction cstop rmps rmim rmvl rmnw

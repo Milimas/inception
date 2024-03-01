@@ -17,7 +17,7 @@ install: configure
 		--admin_password=${WP_ADMIN_PASSWORD} \
 		--admin_email=${WP_ADMIN_EMAIL}
 	$(WP_CLI) user create ${WP_USER} ${WP_USER_EMAIL} \
-		--role=subscriber \
+		--role=author \
 		--user_pass=${WP_USER_PASS} || true
 	$(WP_CLI) option update siteurl "${WORDPRESS_WEBSITE_URL}"
 	$(WP_CLI) theme install worklancer --activate

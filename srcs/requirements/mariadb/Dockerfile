@@ -1,4 +1,4 @@
-FROM alpine:3.18.6
+FROM alpine:3.18
 
 ARG DB_ROOT_PASS
 ARG DB_PASS
@@ -24,10 +24,7 @@ RUN apk add --update --no-cache mariadb mariadb-client\
 	&& mysql_install_db --user=mysql --ldata=/var/lib/mysql\
 	&& /usr/bin/mysqld --user=mysql --bootstrap --verbose=0 --skip-name-resolve --skip-networking=0 < tmp.db
 	#&& rm -f tmp.db
-	
 
 ADD --chmod=744 tools/run.sh .
 
 ENTRYPOINT ["./run.sh"]
-#ENTRYPOINT ["/usr/bin/mysqld", "--user=mysql", "--console", "--skip-name-resolve", "--skip-networking=0"]
-#ENTRYPOINT tail -f /dev/null

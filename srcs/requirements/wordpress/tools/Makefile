@@ -20,6 +20,7 @@ install: configure
 		--role=author \
 		--user_pass=${WP_USER_PASS} || true
 	$(WP_CLI) option update siteurl "${WORDPRESS_WEBSITE_URL}"
+	$(WP_CLI) theme install fotawp
 	$(WP_CLI) theme install worklancer --activate
 
 configure: $(WP_CONFIG)

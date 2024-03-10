@@ -64,6 +64,10 @@ services:
       context: ./requirements/nginx/
       args:
         - DOMAIN=${WP_WEBSITE_URL_WITHOUT_HTTP}
+        - SSL_PASSPHRASE=${SSL_PASSPHRASE}
+        - SSL_CERTIFICATE=${SSL_CERTIFICATE}
+        - SSL_CERTIFICATE_KEY=${SSL_CERTIFICATE_KEY}
+        - SSL_PASSWORD_FILE=${SSL_PASSWORD_FILE}
     env_file: 
       - .env
     container_name: nginx
@@ -84,8 +88,6 @@ services:
     init: true
     build:
       context: ./requirements/bonus/redis/
-      args:
-        - REDIS_PASS=${REDIS_PASS}
     env_file:
       - .env
     container_name: redis

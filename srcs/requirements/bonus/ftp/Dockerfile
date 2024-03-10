@@ -12,6 +12,6 @@ RUN apk add --update --no-cache vsftpd\
 	&& echo "${FTP_USER}:${FTP_PASS}" | chpasswd
 
 ADD config/vsftpd.conf /etc/vsftpd/vsftpd.conf
-ADD config/vsftpd.conf /etc/vsftpd.conf
+# ADD config/vsftpd.conf /etc/vsftpd.conf
 
 ENTRYPOINT ["vsftpd"]

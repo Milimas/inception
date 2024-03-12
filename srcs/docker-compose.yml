@@ -68,10 +68,6 @@ services:
         - SSL_CERTIFICATE=${SSL_CERTIFICATE}
         - SSL_CERTIFICATE_KEY=${SSL_CERTIFICATE_KEY}
         - SSL_PASSWORD_FILE=${SSL_PASSWORD_FILE}
-    env_file: 
-        - SSL_CERTIFICATE=${SSL_CERTIFICATE}
-        - SSL_CERTIFICATE_KEY=${SSL_CERTIFICATE_KEY}
-        - SSL_PASSWORD_FILE=${SSL_PASSWORD_FILE}
     container_name: nginx
     depends_on:
       - wordpress

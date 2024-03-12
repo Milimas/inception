@@ -1,5 +1,7 @@
 version: '3.8'
+
 name: inception
+
 volumes:
   wordpress:
     name: wordpress
@@ -27,7 +29,6 @@ services:
   mariadb:
     image: mariadb:inception
     init: true
-    env_file: .env
     build:
       context: ./requirements/mariadb/
       args:
@@ -63,21 +64,20 @@ services:
     build:
       context: ./requirements/nginx/
       args:
-        - DOMAIN=${WP_WEBSITE_URL_WITHOUT_HTTP}
         - SSL_PASSPHRASE=${SSL_PASSPHRASE}
         - SSL_CERTIFICATE=${SSL_CERTIFICATE}
         - SSL_CERTIFICATE_KEY=${SSL_CERTIFICATE_KEY}
         - SSL_PASSWORD_FILE=${SSL_PASSWORD_FILE}
     env_file: 
-      - .env
+        - SSL_CERTIFICATE=${SSL_CERTIFICATE}
+        - SSL_CERTIFICATE_KEY=${SSL_CERTIFICATE_KEY}
+        - SSL_PASSWORD_FILE=${SSL_PASSWORD_FILE}
     container_name: nginx
     depends_on:
       - wordpress
-      - portfolio
     restart: unless-stopped
     ports:
       - "443:443"
-    hostname: abeihaqi.42.fr
     volumes:
       - wordpress:/var/www/wordpress
     networks: 
@@ -88,14 +88,10 @@ services:
     init: true
     build:
       context: ./requirements/bonus/redis/
-    env_file:
-      - .env
     container_name: redis
     depends_on:
-      - nginx
+      - wordpress
     restart: unless-stopped
-    volumes:
-      - wordpress:/var/www/wordpress
     networks:
       - inception-network
 
@@ -108,8 +104,6 @@ services:
         - FTP_USER=${FTP_USER}
         - FTP_PASS=${FTP_PASS}
         - FTP_HOME=${FTP_HOME}
-    env_file:
-      - .env
     container_name: ftp
     depends_on:
       - wordpress
@@ -127,12 +121,9 @@ services:
     init: true
     build:
       context: ./requirements/bonus/adminer
-    env_file:
-      - .env
     container_name: adminer
     depends_on:
       - mariadb
-      - nginx
     restart: unless-stopped
     ports:
       - "8080:8080"

@@ -2,8 +2,8 @@ FROM alpine:3.18
 
 ARG SSL_PASSPHRASE
 ARG SSL_PASSWORD_FILE
-ARG SSL_CERTIFICATE
-ARG SSL_CERTIFICATE_KEY
+# ARG SSL_CERTIFICATE
+# ARG SSL_CERTIFICATE_KEY
 
 ADD config/default.conf /tmp/default.conf
 ADD config/nginx.conf /etc/nginx/nginx.conf

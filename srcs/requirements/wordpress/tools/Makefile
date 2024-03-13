@@ -6,7 +6,7 @@ start: install
 	$(WP_CLI) plugin install redis-cache --activate
 	cp /var/www/wordpress/wp-content/plugins/redis-cache/includes/object-cache.php /var/www/wordpress/wp-content/
 	$(WP_CLI) plugin update --all
-	chown -R nobody:nobody /var/www
+	chown -R nobody:nogroup /var/www
 	exec php-fpm81 -F
 
 install: configure

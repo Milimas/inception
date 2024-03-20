@@ -1,4 +1,4 @@
-FROM alpine:3.18
+FROM alpine:3.18.6
 
 RUN apk add --update --no-cache php81
 

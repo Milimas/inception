@@ -18,13 +18,13 @@ prune: clean
 reload: stop
 	mkdir -p ~/data/wordpress
 	mkdir -p ~/data/mariadb
-	docker compose -p inception -f srcs/docker-compose.yml up --build -d 
+	docker compose -f srcs/docker-compose.yml up --build -d 
 
 start:
-	docker compose -p inception -f srcs/docker-compose.yml up -d
+	docker compose -f srcs/docker-compose.yml up -d
 
 dev:
-	docker compose -p inception -f srcs/docker-compose.yml up
+	docker compose -f srcs/docker-compose.yml up
 
 tlstest:
 	curl -I -v --tlsv1.3 --tls-max 1.3 https://abeihaqi.42.fr

@@ -1,4 +1,4 @@
-FROM alpine:3.18
+FROM alpine:3.18.6
 
 ARG FTP_USER
 ARG FTP_PASS

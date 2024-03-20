@@ -1,4 +1,4 @@
-FROM alpine:3.18
+FROM alpine:3.18.6
 
 ARG DB_ROOT_PASS
 ARG DB_PASS

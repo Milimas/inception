@@ -1,4 +1,4 @@
-FROM alpine:3.18
+FROM alpine:3.18.6
 
 ADD https://github.com/vrana/adminer/releases/download/v4.8.1/adminer-4.8.1-mysql.php /var/www/index.php
 

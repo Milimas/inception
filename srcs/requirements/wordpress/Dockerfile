@@ -1,4 +1,4 @@
-FROM alpine:3.18
+FROM alpine:3.18.6
 
 ADD --chmod=744 https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar /usr/local/bin/wp-cli
 ADD tools/Makefile /scripts/Makefile
